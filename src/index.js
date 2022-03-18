@@ -93,7 +93,7 @@ fetch(url6)
 })
 
 // All persons given a zip
-getFromApi("zipcode/2791", "#zipPerson",true);
+getFromApi("zipcode/2000", "#zipPerson",true);
 
 
 
