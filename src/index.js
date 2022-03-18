@@ -27,49 +27,60 @@ the Period2-week2-day3 Exercises
 */
 
 
+const homeUrl = "http://localhost:8080/devops_starter_war_exploded/api/user/";
 
-// All persons
-const url1 = "http://localhost:8080/devops_starter_war_exploded/api/user/all";
-fetch(url1)
-.then(res => res.json())
-.then(data => {
-  data.forEach(element => {
-    document.querySelector("#allPersons").innerHTML += "<li>" + element.firstName + "</li>"
-  });
-})
+function getFromApi(path,htmlId,isList){
 
+  const url = homeUrl + path;
 
-// All persons
-const url2 = "http://localhost:8080/devops_starter_war_exploded/api/user/3";
-fetch(url2)
-.then(res => res.json())
-.then(data => {
+  if(isList){
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+
+        data.forEach(element => {
+
+          document.querySelector(htmlId).innerHTML += "<li>" + element.firstName + "</li>"
+          
+        });
+
+      })
+
+  } else {
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+
+        document.querySelector(htmlId).innerHTML += "<li>" + data.firstName + "</li>"
+
+      })
+
+  }
   
-  document.querySelector("#personById").innerHTML += "<li>" + data.firstName + "</li>"
+}
 
-})
+
+
+
+
+// All persons
+getFromApi("all","#allPersons",true);
 
 
 // All persons given a hobby
-const url4 = "http://localhost:8080/devops_starter_war_exploded/api/user/hobby/Parkour";
-fetch(url4)
-.then(res => res.json())
-.then(data => {
-  data.forEach(element => {
-    document.querySelector("#hobbyPersons").innerHTML += "<li>" + element.firstName + "</li>"
-  });
-})
+getFromApi("hobby/Parkour","#hobbyPersons",true);
+
+
+// Person by ID
+getFromApi("3","#personById",false);
 
 
 // Person given phone
-const url5 = "http://localhost:8080/devops_starter_war_exploded/api/user/phone/54853846";
-fetch(url5)
-.then(res => res.json())
-.then(data => {
-  
-  document.querySelector("#phonePerson").innerHTML = "<li>" + data.firstName + "</li>"
+getFromApi("phone/54853846","#phonePerson",false);
 
-})
+
 
 // Person count by hobby
 const url6 = "http://localhost:8080/devops_starter_war_exploded/api/user/hobby/count/Parkour";
@@ -82,14 +93,9 @@ fetch(url6)
 })
 
 // All persons given a zip
-const url7 = "http://localhost:8080/devops_starter_war_exploded/api/user/zipcode/2791";
-fetch(url7)
-.then(res => res.json())
-.then(data => {
-  data.forEach(element => {
-    document.querySelector("#zipPerson").innerHTML += "<li>" + element.firstName + "</li>"
-  });
-})
+getFromApi("zipcode/2791", "#zipPerson",true);
+
+
 
 // All zips
 const url8 = "http://localhost:8080/devops_starter_war_exploded/api/user/zipcode/all";
@@ -103,15 +109,78 @@ fetch(url8)
 
 
 
+// Create person
+document.querySelector("#submitCreatePerson").addEventListener('click', (ev) => {
+
+  fetch(homeUrl, {
+      method: "POST",
+
+      body: JSON.stringify({
+          email: document.querySelector("#createEmail").value,
+          firstName: document.querySelector("#createFirstname").value,
+          lastName: document.querySelector("#createLastname").value,
+      }),
+      
+      headers: {
+          "Content-type": "application/json; charset=UTF-8"
+      }
+  })
+
+  document.querySelector("#createPara").innerHTML = "SUBMITTED";
+})
+
+
+
+// Edit person
+document.querySelector("#submitEditPerson").addEventListener('click', (ev) => {
+
+  fetch(homeUrl + document.querySelector("#editId").value, {
+      method: "PUT",
+
+      body: JSON.stringify({
+          id: document.querySelector("#editId").value,
+          email: document.querySelector("#editEmail").value,
+          firstName: document.querySelector("#editFirstname").value,
+          lastName: document.querySelector("#editLastname").value,
+      }),
+      
+      headers: {
+          "Content-type": "application/json; charset=UTF-8"
+      }
+  })
+
+  document.querySelector("#editPara").innerHTML = "SUBMITTED";
+})
+
+
+// Delete person
+document.querySelector("#submitDeletePerson").addEventListener('click', (ev) => {
+
+  fetch(homeUrl + document.querySelector("#deleteId").value, {
+    method: 'DELETE',
+  })
+
+  document.querySelector("#deletePara").innerHTML = "DELETED";
+
+})
+
+
 
 
 
 function hideAllShowOne(idToShow)
 {
   document.getElementById("about_html").style = "display:none"
-  document.getElementById("ex1_html").style = "display:none"
-  document.getElementById("ex2_html").style = "display:none"
-  document.getElementById("ex3_html").style = "display:none"
+  document.getElementById("allPersons_html").style = "display:none"
+  document.getElementById("allByHobby_html").style = "display:none"
+  document.getElementById("byId_html").style = "display:none"
+  document.getElementById("byPhone_html").style = "display:none"
+  document.getElementById("countByHobby_html").style = "display:none"
+  document.getElementById("byZip_html").style = "display:none"
+  document.getElementById("allZipCodes_html").style = "display:none"
+  document.getElementById("createPerson_html").style = "display:none"
+  document.getElementById("editPerson_html").style = "display:none"
+  document.getElementById("deletePerson_html").style = "display:none"
   document.getElementById(idToShow).style = "display:block"
 }
 
@@ -120,9 +189,16 @@ function menuItemClicked(evt)
   const id = evt.target.id;
   switch (id)
   {
-    case "ex1": hideAllShowOne("ex1_html"); break
-    case "ex2": hideAllShowOne("ex2_html"); break
-    case "ex3": hideAllShowOne("ex3_html"); break
+    case "all": hideAllShowOne("allPersons_html"); break
+    case "allByHobby": hideAllShowOne("allByHobby_html"); break
+    case "byId": hideAllShowOne("byId_html"); break
+    case "byPhone": hideAllShowOne("byPhone_html"); break
+    case "countByHobby": hideAllShowOne("countByHobby_html"); break
+    case "byZip": hideAllShowOne("byZip_html"); break
+    case "allZipCodes": hideAllShowOne("allZipCodes_html"); break
+    case "createPerson": hideAllShowOne("createPerson_html"); break
+    case "editPerson": hideAllShowOne("editPerson_html"); break
+    case "deletePerson": hideAllShowOne("deletePerson_html"); break
     default: hideAllShowOne("about_html"); break
   }
   evt.preventDefault();
