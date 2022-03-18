@@ -70,7 +70,7 @@ getFromApi("all","#allPersons",true);
 
 
 // All persons given a hobby
-getFromApi("hobby/Parkour","#hobbyPersons",true);
+getFromApi("hobby/Card game","#hobbyPersons",true);
 
 
 // Person by ID
